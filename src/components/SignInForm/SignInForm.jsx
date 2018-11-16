@@ -1,6 +1,10 @@
+//Modules
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { IoIosContact, IoIosLock } from "react-icons/io";
+import { withRouter } from "react-router-dom";
+//Actions
+import actions from "../../redux/actions";
 //Components
 import {
   Button,
@@ -23,7 +27,8 @@ export class SignInForm extends Component {
       email: "",
       password: "",
       validate: {
-        emailState: ""
+        emailState: "",
+        buttonState: true
       }
     };
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -39,17 +44,21 @@ export class SignInForm extends Component {
       this.setState({
         email: event.target.value,
         validate: {
-          emailState: ""
+          emailState: "",
+          buttonState: true
         }
       });
     }
   }
   handleChangePassword(event) {
-    this.setState({ password: event.target.value });
-  }
-  handleSubmit(event) {
-    event.preventDefault();
-    //TODO:here goes the fetch and dispatch
+    const { validate } = this.state;
+    if (
+      event.target.value !== "" &&
+      this.state.validate.emailState === "has-success"
+    )
+      validate.buttonState = false;
+    else validate.buttonState = true;
+    this.setState({ password: event.target.value, validate });
   }
   validateEmail(e) {
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -61,9 +70,28 @@ export class SignInForm extends Component {
     }
     this.setState({ validate });
   }
+  async handleSubmit(event) {
+    event.preventDefault();
+    const response = await fetch("/signin", {
+      method: "POST",
+      body: JSON.stringify({
+        username: this.state.email,
+        password: this.state.password
+      })
+    })
+      .then(res => res.json())
+      .catch(err => {
+        this.props.dispatch(
+          actions.AlertGlobal("Could not Connect to server: " + err.message,"danger")
+        );
+      });
+    if (response.success) {
+      this.props.dispatch(actions.SignIn());
+    } else this.props.dispatch(actions.AlertGlobal(response.message));
+  }
   render() {
     return (
-      <Container>
+      <div className="SignInFormContainer">
         <Form>
           <FormGroup>
             <InputGroup>
@@ -82,7 +110,7 @@ export class SignInForm extends Component {
                 value={this.state.email}
               />
               <FormFeedback valid>valid email</FormFeedback>
-              <FormFeedback invalid>
+              <FormFeedback invalid="true">
                 Uh oh! Looks like there is an issue with your email. Please
                 input a correct email.
               </FormFeedback>
@@ -109,15 +137,18 @@ export class SignInForm extends Component {
             color="primary"
             size="sm"
             onClick={this.handleSubmit}
+            disabled={this.state.validate.buttonState}
           >
             Sign In
           </Button>
         </Form>
-      </Container>
+      </div>
     );
   }
 }
 
 const mapStateToProps = state => ({});
 
-export default connect(mapStateToProps)(SignInForm);
+let ConnectedSignInForm = connect(mapStateToProps)(SignInForm);
+
+export default withRouter(ConnectedSignInForm);

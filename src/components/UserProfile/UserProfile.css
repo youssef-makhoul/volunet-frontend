@@ -1,0 +1,30 @@
+.profileHeader {
+    display: flex;
+    flex-direction: column;
+}
+
+.profileImage {
+    align-self: center;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+}
+
+.profileName {
+    font-size: 40px;
+}
+
+.profileCauses {
+    display: flex;
+    justify-content: center;
+}
+
+.profile {
+    width: 80%;
+    margin: 0;
+    padding: 0;
+    background-color: #000 top;
+    left: 0;
+}
+
+.cauesBadge {}

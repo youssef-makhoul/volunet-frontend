@@ -1,20 +1,28 @@
+//Modules
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import SignInForm from "../../components/SignInForm/SignInForm";
+import {withRouter} from "react-router-dom";
 //CSS
 import "./SignIn.css";
 
 export class SignIn extends Component {
+  componentDidMount = () => {
+    document.title = "Volunet | SignIn";
+  };
+
   render() {
     return (
-        <div className="FormContainer">
-          <h2 className="header">Sign in to your account</h2>
-          <SignInForm />
-        </div>
+      <div className="SignInContainer">
+        <h2 className="header">Sign in to your account</h2>
+        <SignInForm />
+      </div>
     );
   }
 }
 
 const mapStateToProps = state => ({});
 
-export default connect(mapStateToProps)(SignIn);
+let ConnectedSignIn = connect(mapStateToProps)(SignIn)
+
+export default withRouter(ConnectedSignIn);
