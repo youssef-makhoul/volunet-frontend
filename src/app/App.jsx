@@ -26,13 +26,16 @@ class App extends Component {
     this.renderGlobalAlert = this.renderGlobalAlert.bind(this);
   }
   alertOnDismiss() {
+    if (!this.props.alert.visible) return;
     this.props.dispatch(actions.DisableAlertGlobal());
   }
   checkAuthenticated() {
     if (this.props.authenticated && this.props.userprofile !== undefined)
       return;
     else {
-      fetch("/user")
+      fetch("/user", {
+        credentials: "same-origin"
+      })
         .then(res => res.json())
         .then(res => {
           if (res.success) {
@@ -41,19 +44,26 @@ class App extends Component {
         })
         .catch(err => {
           this.props.dispatch(
-            actions.AlertGlobal("Could not Connect to server " + err.message,"danger")
+            actions.AlertGlobal(
+              "Could not Connect to server " + err.message,
+              "danger"
+            )
           );
         });
     }
   }
+
   renderGlobalAlert() {
+    if (this.props.alert.visible)
+      setTimeout(() => {
+        this.alertOnDismiss();
+      }, 2000);
     return (
       <Alert
         color={this.props.alert.color}
         isOpen={this.props.alert.visible}
         toggle={this.alertOnDismiss}
         className="globalAlert"
-        fade={false}
       >
         {this.props.alert.message}
       </Alert>
@@ -74,12 +84,12 @@ class App extends Component {
         ) : (
           <Redirect to="/signin" />
         );
-      case "myprofile/update": 
+      case "myprofile/update":
         return this.props.authenticated ? (
           <UpdateProfile />
         ) : (
           <Redirect to="/signin" />
-        )
+        );
       default:
         break;
     }
@@ -90,32 +100,34 @@ class App extends Component {
       <BrowserRouter>
         <div className="App">
           <NavigationBar />
-          {this.renderGlobalAlert()}
-          <Route
-            exact={true}
-            path="/"
-            render={() => this.renderRoute("main")}
-          />
-          <Route
-            exact={true}
-            path="/signin"
-            render={() => this.renderRoute("signin")}
-          />
-          <Route
-            exact={true}
-            path="/signup"
-            render={() => this.renderRoute("signup")}
-          />
-          <Route
-            exact={true}
-            path="/myprofile"
-            render={() => this.renderRoute("myprofile")}
-          />
-           <Route
-            exact={true}
-            path="/myprofile/update"
-            render={() => this.renderRoute("myprofile/update")}
-          />
+          <div style={{ position: "relative" }}>
+            {this.renderGlobalAlert()}
+            <Route
+              exact={true}
+              path="/"
+              render={() => this.renderRoute("main")}
+            />
+            <Route
+              exact={true}
+              path="/signin"
+              render={() => this.renderRoute("signin")}
+            />
+            <Route
+              exact={true}
+              path="/signup"
+              render={() => this.renderRoute("signup")}
+            />
+            <Route
+              exact={true}
+              path="/myprofile"
+              render={() => this.renderRoute("myprofile")}
+            />
+            <Route
+              exact={true}
+              path="/myprofile/update"
+              render={() => this.renderRoute("myprofile/update")}
+            />
+          </div>
         </div>
       </BrowserRouter>
     );

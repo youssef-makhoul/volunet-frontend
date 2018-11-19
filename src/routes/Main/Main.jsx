@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import {withRouter} from "react-router-dom"
 //CSS
 import "./Main.css";
-
+//Components
+import ProjectsContainer from "../../components/ProjectsContainer/ProjectsContainer"
 export class Main extends Component {
   componentDidMount = () => {
     document.title = "Volunet | SignIn";
@@ -13,7 +14,8 @@ export class Main extends Component {
   render() {
     return (
       <div className="FormContainer">
-        <h2 className="header">Main Page !!!!</h2>
+        <h2 className="header">Projects</h2>
+        <ProjectsContainer/>
       </div>
     );
   }

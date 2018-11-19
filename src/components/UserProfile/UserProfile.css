@@ -8,15 +8,26 @@
     border-radius: 50%;
     width: 200px;
     height: 200px;
+    margin: 1%;
+}
+
+.experiencesContainer {
+    width: 100%;
+}
+
+.experiencesCard{
+    padding:0;
 }
 
 .profileName {
     font-size: 40px;
+    text-align: center;
 }
 
 .profileCauses {
     display: flex;
     justify-content: center;
+    border: black;
 }
 
 .profile {
@@ -27,4 +38,6 @@
     left: 0;
 }
 
-.cauesBadge {}
+.causeBadge {
+    margin: 0.25%;
+}

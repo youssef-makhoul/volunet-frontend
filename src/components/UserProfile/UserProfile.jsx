@@ -33,7 +33,6 @@ export class UserProfile extends Component {
     };
     this.toggleContact = this.toggleContact.bind(this);
     this.renderContactInfo = this.renderContactInfo.bind(this);
-    this.renderPhoneNumbers = this.renderPhoneNumbers.bind(this);
     this.renderCauses = this.renderCauses.bind(this);
     this.renderExperiences = this.renderExperiences.bind(this);
     this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
@@ -43,19 +42,9 @@ export class UserProfile extends Component {
       popoverOpen: !this.state.popoverOpen
     });
   }
-  renderPhoneNumbers(phoneNumbers) {
+  renderContactInfo(phonenumber, email, address) {
     return (
-      <Container className="profileCauses">
-        {phoneNumbers.map((phoneNumber, index) => (
-          <li key={index}> {phoneNumber} </li>
-        ))}
-      </Container>
-    );
-  }
-
-  renderContactInfo(phonenumbers, email) {
-    return (
-      <div>
+      <div className="contactInfo">
         <Button id="contactPopover" onClick={this.toggleContact}>
           <IoIosPhonePortrait />
         </Button>
@@ -66,8 +55,9 @@ export class UserProfile extends Component {
           toggle={this.toggle}
         >
           <PopoverHeader>Contact Info</PopoverHeader>
-          {email}
-          <PopoverBody>{this.renderPhoneNumbers(phonenumbers)}</PopoverBody>
+          <PopoverBody>{email}</PopoverBody>
+          <PopoverBody>{phonenumber}</PopoverBody>
+          <PopoverBody>{PaymentAddress.details}</PopoverBody>
         </Popover>
       </div>
     );
@@ -77,7 +67,7 @@ export class UserProfile extends Component {
       <Container className="profileCauses">
         {causes.map((cause, index) => {
           return (
-            <Badge key={index} color="primary">
+            <Badge key={index} color="primary" className="causeBadge">
               #{cause.title}
             </Badge>
           );
@@ -92,12 +82,12 @@ export class UserProfile extends Component {
   }
   renderExperiences(experiences) {
     return (
-      <ListGroup>
-        Experience
-        {experiences.map((experience, index) => {
-          return (
-            <Container key={index}>
-              <ListGroupItem >
+      <Container className="experiencesContainer">
+        <ListGroup>
+          Experience
+          {experiences.map((experience, index) => {
+            return (
+              <ListGroupItem key={index} className="experiencesCard">
                 <Card>
                   <CardHeader>
                     <strong>{experience.title}</strong>
@@ -106,19 +96,23 @@ export class UserProfile extends Component {
                     })}
                   </CardHeader>
                   <CardBody>
-                    {this.getFormatedDate(experience.startdate)} - {" "}
+                    {this.getFormatedDate(experience.startdate)} -{" "}
                     {this.getFormatedDate(experience.enddate)}
                   </CardBody>
-                  <CardBody>Summary:<br/>{experience.description}</CardBody>
+                  <CardBody>
+                    Summary:
+                    <br />
+                    {experience.description}
+                  </CardBody>
                 </Card>
               </ListGroupItem>
-            </Container>
-          );
-        })}
-      </ListGroup>
+            );
+          })}
+        </ListGroup>
+      </Container>
     );
   }
-  handleUpdateProfile(event){
+  handleUpdateProfile(event) {
     event.preventDefault();
     this.props.history.push("/myprofile/update");
   }
@@ -135,13 +129,19 @@ export class UserProfile extends Component {
               src={user.image}
               alt="Card image cap"
             />
-            <Button color="primary" onClick={this.handleUpdateProfile}>Edit Profile</Button>
+            <Button color="primary" onClick={this.handleUpdateProfile}>
+              Edit Profile
+            </Button>
           </CardHeader>
           <CardBody>
             <CardTitle className="profileName">{user.fullname} </CardTitle>
             <CardSubtitle>{this.renderCauses(user.causes)}</CardSubtitle>
             <br />
-            {this.renderContactInfo(user.phonenumbers, user.username)}
+            {this.renderContactInfo(
+              user.phonenumbers,
+              user.username,
+              user.address
+            )}
             <br />
             <CardText>{user.summary}</CardText>
             {this.renderExperiences(user.experiences)}

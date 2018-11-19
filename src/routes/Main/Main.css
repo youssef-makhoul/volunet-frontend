@@ -6,7 +6,7 @@
 
 .FormContainer{
     /* background: rgb(240, 231, 231); */
-    width: 50%;
+    width: 100%;
     margin: 0 auto;
     display: flex;
     justify-content: center;

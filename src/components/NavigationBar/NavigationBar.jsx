@@ -65,7 +65,7 @@ export class NavigationBar extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem>
+              <NavItem className="searchIcon">
                 <Link to="/projects/search">
                   <IoIosSearch />
                   search

@@ -16,49 +16,166 @@ import {
   FormText,
   Row,
   Col,
-  Badge,
-  Container
+  Container,
+  Button,
+  Collapse,
+  Card,
+  CardBody
 } from "reactstrap";
+//Actions
+import Actions from "../../redux/actions";
 
 export class UpdateProfileFrom extends Component {
   constructor(props) {
     super(props);
     let user = props.user;
     this.state = {
+      allcauses: [],
       fullname: user.fullname,
       image: user.image,
       phonenumber: user.phonenumbers[0],
       address: user.address,
       causes: user.causes,
       experiences: user.experiences,
+      causesCollapse: false
     };
-    this.renderCausesSubForm = this.renderCausesSubForm.bind(this);
+
     this.renderUserCausesList = this.renderUserCausesList.bind(this);
+    this.renderCausesSubForm = this.renderCausesSubForm.bind(this);
+
+    this.handleShowCausesCollapse = this.handleShowCausesCollapse.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit(event) {
     event.preventDefault();
-    fetch()
+    //fetch();
   }
-  renderCausesSubForm(){
 
+  renderUserCausesList(causes) {
+    return causes.map((cause, index) => {
+      return (
+        <Button
+          key={index}
+          color="primary"
+          size="sm"
+          onClick={event => {
+            event.preventDefault();
+            fetch("/user/causes/remove", {
+              credentials: "same-origin",
+              method: "DELETE",
+              body: JSON.stringify({ id: cause._id })
+            })
+              .then(res => res.json())
+              .then(res => {
+                if (res.success) {
+                  causes.splice(index, 1);
+                  this.setState({
+                    causes: causes
+                  });
+                  this.props.dispatch(
+                    Actions.AlertGlobal(res.message, "success")
+                  );
+                } else {
+                  this.props.dispatch(
+                    Actions.AlertGlobal(res.message, "danger")
+                  );
+                }
+              })
+              .catch(err => {
+                this.props.dispatch(Actions.AlertGlobal(err.message, "danger"));
+              });
+          }}
+        >
+          #{cause.title}
+        </Button>
+      );
+    });
   }
-  renderUserCausesList(causes){
+  handleShowCausesCollapse(event) {
+    event.preventDefault();
+    if (this.state.causesCollapse) {
+      this.setState({ causesCollapse: false });
+      return;
+    }
+    fetch("/causes", {
+      credentials: "same-origin"
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          this.setState({
+            causesCollapse: true,
+            allcauses: res.cuases
+          });
+        } else {
+          this.props.dispatch(Actions.AlertGlobal(res.message, "danger"));
+        }
+      })
+      .catch(err => {
+        this.props.dispatch(Actions.AlertGlobal(err, "danger"));
+      });
+  }
+  renderCausesSubForm(causes) {
     return (
       <Container>
-        {causes.map((cause, index) => {
-          return (
-            <Badge key={index} color="primary">
-              #{cause.title}
-            </Badge>
-          );
-        })}
-        {"  "}
+        {" "}
+        <FormGroup>
+          Causes:{" "}
+          {this.renderUserCausesList(causes)}
+          <Button size="sm" onClick={this.handleShowCausesCollapse}>
+            Add Cause
+          </Button>
+          <Collapse isOpen={this.state.causesCollapse}>
+            <Card>
+              <CardBody>
+                {this.state.allcauses.map((cause, index) => (
+                  <Button
+                    key={index}
+                    color="secondary"
+                    size="sm"
+                    onClick={event => {
+                      event.preventDefault();
+                      fetch("/user/causes/add", {
+                        credentials: "same-origin",
+                        method: "PUT",
+                        body: JSON.stringify({ id: cause._id })
+                      })
+                        .then(res => res.json())
+                        .then(res => {
+                          causes = causes.concat(cause);
+                          if (res.success) {
+                            this.setState({
+                              causes: causes,
+                              causesCollapse: false
+                            });
+                            this.props.dispatch(
+                              Actions.AlertGlobal(res.message, "success")
+                            );
+                          } else {
+                            this.props.dispatch(
+                              Actions.AlertGlobal(res.message, "danger")
+                            );
+                          }
+                        })
+                        .catch(err => {
+                          this.props.dispatch(
+                            Actions.AlertGlobal(err.message, "danger")
+                          );
+                        });
+                    }}
+                  >
+                    #{cause.title}
+                  </Button>
+                ))}
+              </CardBody>
+            </Card>
+          </Collapse>
+        </FormGroup>
       </Container>
     );
   }
-  renderExperiencesSubForm(){}
-  renderUserExperiencesList(){}
+  renderExperiencesSubForm() {}
+  renderUserExperiencesList() {}
   render() {
     if (!this.props.user) return <h1>error</h1>;
     return (
@@ -73,12 +190,12 @@ export class UpdateProfileFrom extends Component {
               type="text"
               id="fullname"
               placeholder="Full Name"
-              onChange={this.handleChangeFullName}
-              value={event => {
+              onChange={event => {
                 this.setState({
                   fullname: event.target.value
                 });
               }}
+              value={this.state.fullname}
             />
           </FormGroup>
           {/* ---------- image ---------- */}
@@ -205,7 +322,7 @@ export class UpdateProfileFrom extends Component {
             </Col>
           </Row>
           {/* ---------- causes ---------- */}
-          {this.renderUserCausesList(this.state.causes)}
+          {this.renderCausesSubForm(this.state.causes)}
         </Form>
       </div>
     );
