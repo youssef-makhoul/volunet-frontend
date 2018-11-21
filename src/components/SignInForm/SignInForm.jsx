@@ -12,7 +12,6 @@ import {
   FormGroup,
   InputGroupAddon,
   Input,
-  Container,
   FormFeedback,
   InputGroup,
   InputGroupText
@@ -92,7 +91,7 @@ export class SignInForm extends Component {
   render() {
     return (
       <div className="SignInFormContainer">
-        <Form>
+        <Form onSubmit={this.handleSubmit}>
           <FormGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
@@ -136,8 +135,8 @@ export class SignInForm extends Component {
             className="btn-block"
             color="primary"
             size="sm"
-            onClick={this.handleSubmit}
             disabled={this.state.validate.buttonState}
+            type="submit"
           >
             Sign In
           </Button>

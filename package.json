@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "volunet",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://142.93.144.151:4000",

@@ -1,15 +1,34 @@
 .header {
-    font-size: 2.5vw;
+    font-size: 1.75vw;
     padding: 20px;
-    color: lightskyblue;
+    color:"primary";
+    align-self: center
 }
 
-.FormContainer{
+.FormContainer {
     /* background: rgb(240, 231, 231); */
     width: 100%;
     margin: 0 auto;
     display: flex;
     justify-content: center;
-    flex-direction: column;   
+    flex-direction: column;
     /* outline: 1px solid black; */
 }
+
+.loadingGif {
+    width: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.blink {
+    padding: 0;
+    animation: blinker 2s linear infinite;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0.4;
+    }
+  }

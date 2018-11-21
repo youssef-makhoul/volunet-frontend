@@ -1,16 +1,30 @@
-.header {
-    font-size: 2.5vw;
+.textHeader {
+    font-size: 3vmin;
     padding: 20px;
-    color: lightskyblue;
     margin: 0 auto;
 }
 
 .SignInContainer{
     /* background: rgb(240, 231, 231); */
-    width: 100%;
+    min-width: 300px;
     display: flex;
     justify-content: center;
     align-content: center;
-    flex-direction: column
+    flex-direction: column;
     /* outline: 1px solid black; */
+    position:fixed;
+    top: 50%;
+    left: 50%;
+    height:60vmin;
+    margin-top: -35vmin; /*set to a negative number 1/2 of your height*/
+    width:90vmin;
+    margin-left: -45vmin; /*set to a negative number 1/2 of your width*/
+}
+
+.signupSpan{
+    margin:2vmin;
+}
+.logo{
+    width: 15%;
+    align-self: center;
 }

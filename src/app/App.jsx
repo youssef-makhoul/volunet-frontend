@@ -1,6 +1,6 @@
 //Modules
 import React, { Component } from "react";
-import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 //CSS
 import "./App.css";
@@ -10,6 +10,9 @@ import SignUp from "../routes/SignUp/SignUp";
 import Main from "../routes/Main/Main";
 import MyProfile from "../routes/MyProfile/MyProfile";
 import UpdateProfile from "../routes/MyProfile/UpdateProfile/UpdateProfile";
+import Project from "../routes/Project/Project";
+import CreateProject from "../routes/CreateProject/CreateProject";
+import Profile from "../routes/Profile/Profile"
 //Components
 import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { Alert } from "reactstrap";
@@ -19,7 +22,7 @@ import actions from "../redux/actions";
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { history: "" };
     this.renderRoute = this.renderRoute.bind(this);
     this.checkAuthenticated = this.checkAuthenticated.bind(this);
     this.alertOnDismiss = this.alertOnDismiss.bind(this);
@@ -90,6 +93,24 @@ class App extends Component {
         ) : (
           <Redirect to="/signin" />
         );
+      case "project":
+        return this.props.authenticated ? (
+          <Project />
+        ) : (
+          <Redirect to="/signin" />
+        );
+      case "project/create":
+        return this.props.authenticated ? (
+          <CreateProject />
+        ) : (
+          <Redirect to="/signin" />
+        );
+        case "user":
+        return this.props.authenticated ? (
+          <Profile />
+        ) : (
+          <Redirect to="/signin" />
+        );
       default:
         break;
     }
@@ -127,6 +148,23 @@ class App extends Component {
               path="/myprofile/update"
               render={() => this.renderRoute("myprofile/update")}
             />
+            <Switch>
+              <Route
+                exact={true}
+                path="/project/create"
+                render={() => this.renderRoute("project/create")}
+              />
+              <Route
+                exact={true}
+                path="/project/:id"
+                render={() => this.renderRoute("project")}
+              />
+            </Switch>
+            <Route
+                exact={true}
+                path="/user/:id"
+                render={() => this.renderRoute("user")}
+              />
           </div>
         </div>
       </BrowserRouter>

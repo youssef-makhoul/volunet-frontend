@@ -10,17 +10,19 @@ import "react-phone-number-input/style.css";
 import {
   Form,
   FormGroup,
-  Label,
   Input,
   CustomInput,
-  FormText,
   Row,
   Col,
   Container,
   Button,
   Collapse,
   Card,
-  CardBody
+  CardBody,
+  UncontrolledTooltip,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText
 } from "reactstrap";
 //Actions
 import Actions from "../../redux/actions";
@@ -29,28 +31,25 @@ export class UpdateProfileFrom extends Component {
   constructor(props) {
     super(props);
     let user = props.user;
+    if(user.address===undefined)
+      user.address={details:"",state:"",city:"",zip:""}
     this.state = {
       allcauses: [],
-      fullname: user.fullname,
       image: user.image,
       phonenumber: user.phonenumbers[0],
       address: user.address,
       causes: user.causes,
       experiences: user.experiences,
+      summary: user.summary,
       causesCollapse: false
     };
 
     this.renderUserCausesList = this.renderUserCausesList.bind(this);
     this.renderCausesSubForm = this.renderCausesSubForm.bind(this);
-
     this.handleShowCausesCollapse = this.handleShowCausesCollapse.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.updateUser = this.updateUser.bind(this);
   }
-  handleSubmit(event) {
-    event.preventDefault();
-    //fetch();
-  }
-
   renderUserCausesList(causes) {
     return causes.map((cause, index) => {
       return (
@@ -58,6 +57,7 @@ export class UpdateProfileFrom extends Component {
           key={index}
           color="primary"
           size="sm"
+          style={{ marginLeft: "2.5px", marginRight: "2.5px" }}
           onClick={event => {
             event.preventDefault();
             fetch("/user/causes/remove", {
@@ -75,6 +75,7 @@ export class UpdateProfileFrom extends Component {
                   this.props.dispatch(
                     Actions.AlertGlobal(res.message, "success")
                   );
+                  this.updateUser();
                 } else {
                   this.props.dispatch(
                     Actions.AlertGlobal(res.message, "danger")
@@ -119,211 +120,276 @@ export class UpdateProfileFrom extends Component {
     return (
       <Container>
         {" "}
-        <FormGroup>
-          Causes:{" "}
-          {this.renderUserCausesList(causes)}
-          <Button size="sm" onClick={this.handleShowCausesCollapse}>
-            Add Cause
-          </Button>
-          <Collapse isOpen={this.state.causesCollapse}>
-            <Card>
-              <CardBody>
-                {this.state.allcauses.map((cause, index) => (
-                  <Button
-                    key={index}
-                    color="secondary"
-                    size="sm"
-                    onClick={event => {
-                      event.preventDefault();
-                      fetch("/user/causes/add", {
-                        credentials: "same-origin",
-                        method: "PUT",
-                        body: JSON.stringify({ id: cause._id })
-                      })
-                        .then(res => res.json())
-                        .then(res => {
+        Causes: {this.renderUserCausesList(causes)}
+        <Button size="sm" onClick={this.handleShowCausesCollapse}>
+          Add Cause
+        </Button>
+        <Collapse isOpen={this.state.causesCollapse}>
+          <Card>
+            <CardBody>
+              {this.state.allcauses.map((cause, index) => (
+                <Button
+                  key={index}
+                  color="primary"
+                  size="sm"
+                  outline
+                  id={"cause-" + index}
+                  style={{ marginLeft: "2.5px", marginRight: "2.5px" }}
+                  onClick={event => {
+                    event.preventDefault();
+                    fetch("/user/causes/add", {
+                      credentials: "same-origin",
+                      method: "PUT",
+                      body: JSON.stringify({ id: cause._id })
+                    })
+                      .then(res => res.json())
+                      .then(res => {
+                        if (res.success) {
                           causes = causes.concat(cause);
-                          if (res.success) {
-                            this.setState({
-                              causes: causes,
-                              causesCollapse: false
-                            });
-                            this.props.dispatch(
-                              Actions.AlertGlobal(res.message, "success")
-                            );
-                          } else {
-                            this.props.dispatch(
-                              Actions.AlertGlobal(res.message, "danger")
-                            );
-                          }
-                        })
-                        .catch(err => {
+                          this.setState({
+                            causes: causes,
+                            causesCollapse: false
+                          });
                           this.props.dispatch(
-                            Actions.AlertGlobal(err.message, "danger")
+                            Actions.AlertGlobal(res.message, "success")
                           );
-                        });
-                    }}
+                          this.updateUser();
+                        } else {
+                          this.props.dispatch(
+                            Actions.AlertGlobal(res.message, "danger")
+                          );
+                        }
+                      })
+                      .catch(err => {
+                        this.props.dispatch(
+                          Actions.AlertGlobal(err.message, "danger")
+                        );
+                      });
+                  }}
+                >
+                  #{cause.title}
+                  <UncontrolledTooltip
+                    placement="bottom"
+                    target={"cause-" + index}
                   >
-                    #{cause.title}
-                  </Button>
-                ))}
-              </CardBody>
-            </Card>
-          </Collapse>
-        </FormGroup>
+                    {cause.description}
+                  </UncontrolledTooltip>
+                </Button>
+              ))}
+            </CardBody>
+          </Card>
+        </Collapse>
       </Container>
     );
   }
-  renderExperiencesSubForm() {}
-  renderUserExperiencesList() {}
+  updateUser(){
+    fetch("/user", {
+      credentials: "same-origin"
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          this.props.dispatch(Actions.SignIn(res.user));
+        }
+      })
+      .catch(err => {
+        this.props.dispatch(
+          Actions.AlertGlobal(
+            "Could not Connect to server " + err.message,
+            "danger"
+          )
+        );
+      });
+  }
+  handleSubmit(event) {
+    event.preventDefault();
+    fetch("/user/update", {
+      credentials: "same-origin",
+      method: "PUT",
+      body: JSON.stringify({
+        address: this.state.address,
+        phonenumbers: [this.state.phonenumber],
+        image: this.state.image,
+        summary: this.state.summary
+      })
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          this.props.dispatch(Actions.AlertGlobal(res.message, "success"));
+          this.updateUser();
+          this.props.history.push("/myprofile");
+        } else {
+          this.props.dispatch(Actions.AlertGlobal(res.message, "danger"));
+        }
+      })
+      .catch(err => {
+        this.props.dispatch(Actions.AlertGlobal(err.message, "danger"));
+      });
+  }
   render() {
     if (!this.props.user) return <h1>error</h1>;
     return (
       <div className="updateForm">
-        <Form>
-          {/* ---------- fullname ---------- */}
-          <FormGroup>
-            <Label for="fullname" className="formLabel">
-              Full Name
-            </Label>
-            <Input
-              type="text"
-              id="fullname"
-              placeholder="Full Name"
-              onChange={event => {
-                this.setState({
-                  fullname: event.target.value
-                });
-              }}
-              value={this.state.fullname}
-            />
-          </FormGroup>
+        <Form onSubmit={this.handleSubmit}>
+          <h2>{this.props.user.fullname}</h2>
+          <h3>{this.props.user.username}</h3>
           {/* ---------- image ---------- */}
           <FormGroup>
-            <Label for="image" className="formLabel">
-              Profile Picture:
-            </Label>
-            <CustomInput
-              type="file"
-              name="imageFile"
-              id="image"
-              onChange={event => {
-                this.setState({
-                  image: event.target.value.replace(
-                    "C:\\fakepath\\",
-                    "./img/profile/"
-                  )
-                });
-              }}
-              label={this.state.image}
-            />
-            <FormText color="muted">
-              here if you want to change your image
-            </FormText>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend" className="inputAddon">
+                <InputGroupText>Image:</InputGroupText>
+              </InputGroupAddon>
+              <CustomInput
+                type="file"
+                name="imageFile"
+                id="image"
+                onChange={event => {
+                  this.setState({
+                    image: event.target.value.replace(
+                      "C:\\fakepath\\",
+                      "/img/profile/"
+                    )
+                  });
+                }}
+                label={this.state.image}
+              />
+            </InputGroup>
           </FormGroup>
           {/* ---------- phonenumber ---------- */}
           <FormGroup>
-            <Label for="phonenumber" className="formLabel">
-              Phone Number:
-            </Label>
-            <PhoneInput
-              id="phonenumber"
-              placeholder="Enter phone number"
-              value={this.state.phonenumber}
-              onChange={value => this.setState({ phonenumber: value })}
-            />
+            <InputGroup>
+              <PhoneInput
+                id="phonenumber"
+                placeholder="Enter phone number"
+                value={this.state.phonenumber}
+                onChange={value => this.setState({ phonenumber: value })}
+              />
+            </InputGroup>
           </FormGroup>
-
           {/* ---------- address ---------- */}
-          <Row form>
-            <Col md={5}>
-              <FormGroup>
-                <Label for="exampleAddress" className="formLabel">
-                  Address
-                </Label>
-                <Input
-                  type="text"
-                  name="address"
-                  id="exampleAddress"
-                  value={this.state.address.details}
-                  onChange={event => {
-                    this.setState({
-                      address: {
-                        ...this.state.address,
-                        details: event.target.value
-                      }
-                    });
-                  }}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={3}>
-              <FormGroup>
-                <Label for="exampleCity" className="formLabel">
-                  City
-                </Label>
-                <Input
-                  type="text"
-                  name="city"
-                  id="exampleCity"
-                  value={this.state.address.city}
-                  onChange={event => {
-                    this.setState({
-                      address: {
-                        ...this.state.address,
-                        city: event.target.value
-                      }
-                    });
-                  }}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={2}>
-              <FormGroup>
-                <Label for="exampleState" className="formLabel">
-                  State
-                </Label>
-                <Input
-                  type="text"
-                  name="state"
-                  id="exampleState"
-                  value={this.state.address.state}
-                  onChange={event => {
-                    this.setState({
-                      address: {
-                        ...this.state.address,
-                        state: event.target.value
-                      }
-                    });
-                  }}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={2}>
-              <FormGroup>
-                <Label for="exampleZip" className="formLabel">
-                  Zip
-                </Label>
-                <Input
-                  type="text"
-                  name="zip"
-                  id="exampleZip"
-                  value={this.state.address.zip}
-                  onChange={event => {
-                    this.setState({
-                      address: {
-                        ...this.state.address,
-                        zip: event.target.value
-                      }
-                    });
-                  }}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-          {/* ---------- causes ---------- */}
-          {this.renderCausesSubForm(this.state.causes)}
+          <FormGroup>
+            <Row form>
+              {/* ---------- details ---------- */}
+              <Col md={5}>
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend" className="inputAddon">
+                    <InputGroupText>Address:</InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    type="text"
+                    id="addressdetails"
+                    placeholder=""
+                    onChange={event => {
+                      this.setState({
+                        address: {
+                          ...this.state.address,
+                          details: event.target.value
+                        }
+                      });
+                    }}
+                    value={this.state.address.details}
+                  />
+                </InputGroup>
+              </Col>
+              {/* ---------- city ---------- */}
+              <Col md={3}>
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend" className="inputAddon">
+                    <InputGroupText>City:</InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    type="text"
+                    id="city"
+                    placeholder=""
+                    onChange={event => {
+                      this.setState({
+                        address: {
+                          ...this.state.address,
+                          city: event.target.value
+                        }
+                      });
+                    }}
+                    value={this.state.address.city}
+                  />
+                </InputGroup>
+              </Col>
+              <Col md={2}>
+                {/* ---------- state ---------- */}
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend" className="inputAddon">
+                    <InputGroupText>State:</InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    type="text"
+                    id="state"
+                    placeholder=""
+                    onChange={event => {
+                      this.setState({
+                        address: {
+                          ...this.state.address,
+                          state: event.target.value
+                        }
+                      });
+                    }}
+                    value={this.state.address.state}
+                  />
+                </InputGroup>
+              </Col>
+              <Col md={2}>
+                {/* ---------- zip ---------- */}
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend" className="inputAddon">
+                    <InputGroupText>Zip:</InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    type="text"
+                    id="zip"
+                    placeholder=""
+                    onChange={event => {
+                      this.setState({
+                        address: {
+                          ...this.state.address,
+                          zip: event.target.value
+                        }
+                      });
+                    }}
+                    value={this.state.address.zip}
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+          </FormGroup>
+          {/* ---------- summary ---------- */}
+          <FormGroup>
+            <InputGroup>
+              <InputGroupAddon
+                addonType="prepend"
+                className="glyphicon glyphicon-star"
+              >
+                <InputGroupText>Summary:</InputGroupText>
+              </InputGroupAddon>
+              <Input
+                type="textarea"
+                id="summary"
+                placeholder="Tell people about your self"
+                onChange={event => {
+                  this.setState({
+                    summary: event.target.value
+                  });
+                }}
+                value={this.state.summary}
+              />
+            </InputGroup>
+          </FormGroup>
+          <FormGroup>
+            <Button type="submit" color="primary">
+              Update
+            </Button>
+          </FormGroup>
         </Form>
+        {/* ---------- causes ---------- */}
+        {this.renderCausesSubForm(this.state.causes)}
       </div>
     );
   }

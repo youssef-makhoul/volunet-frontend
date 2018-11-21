@@ -141,8 +141,8 @@ export class SignUpForm extends Component {
   }
   render() {
     return (
-      <Container className="container">
-        <Form>
+      <Container className="SignupFormContainer">
+        <Form onSubmit={this.handleSubmit}>
           {/* email */}
           <FormGroup>
             <Label for="email" className="formLabel">
@@ -219,12 +219,7 @@ export class SignUpForm extends Component {
             <FormFeedback invalid="true">not a match</FormFeedback>
           </FormGroup>
           {/* submit */}
-          <Button
-            className="btn-block"
-            color="primary"
-            size="sm"
-            onClick={this.handleSubmit}
-          >
+          <Button type="submit" className="btn-block" color="primary" size="sm">
             Sign up
           </Button>
         </Form>

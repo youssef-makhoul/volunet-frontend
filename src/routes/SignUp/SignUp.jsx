@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import SignUpForm from "../../components/SignUpForm/SignUpForm";
-import { withRouter } from "react-router-dom";
+import { withRouter,Link } from "react-router-dom";
 //CSS
 import "./SignUp.css";
 
@@ -13,9 +13,13 @@ export class SignUp extends Component {
 
   render() {
     return (
-      <div className="FormContainer">
-        <h2 className="header">Sign up and spread the love</h2>
+      <div className="SignupContainer rounded bg-background">
+        <img src={"/img/logo.png"} className="logo" alt="logo" />
+        <h2 className="textHeader text-primary">Sign up and spread the love</h2>
         <SignUpForm />
+        <span className="signupSpan text-right">
+          already have a profile <Link to="/signin">SignIn</Link>
+        </span>
       </div>
     );
   }

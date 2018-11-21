@@ -1,15 +1,22 @@
-.header {
+.textHeader {
     font-size: 2.5vw;
     padding: 20px;
     color: lightskyblue;
 }
 
-.FormContainer{
-    /* background: rgb(240, 231, 231); */
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    /* outline: 1px solid black; */
+.SignupContainer{
+ /* background: rgb(240, 231, 231); */
+ min-width: 300px;
+ display: flex;
+ justify-content: center;
+ align-content: center;
+ flex-direction: column;
+ /* outline: 1px solid black; */
+ position:fixed;
+ top: 50%;
+ left: 50%;
+ height:90vmin;
+ margin-top: -45vmin; /*set to a negative number 1/2 of your height*/
+ width:100vmin;
+ margin-left: -50vmin; /*set to a negative number 1/2 of your width*/
 }

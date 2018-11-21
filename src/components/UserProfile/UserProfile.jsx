@@ -3,9 +3,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
-import { IoIosPhonePortrait } from "react-icons/io";
+import { IoIosMail, IoIosPhonePortrait, IoIosHome } from "react-icons/io";
 //CSS
 import "./UserProfile.css";
+//Actions
+import Actions from "../../redux/actions";
 //Components
 import {
   Card,
@@ -16,49 +18,74 @@ import {
   CardSubtitle,
   Button,
   CardHeader,
-  Popover,
-  PopoverHeader,
-  PopoverBody,
   Badge,
   Container,
   ListGroup,
-  ListGroupItem
+  ListGroupItem,
+  UncontrolledCollapse
 } from "reactstrap";
+import AddExperienceFrom from "../AddExperienceForm/AddExperienceForm";
 
-export class UserProfile extends Component {
+class UserProfile extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      popoverOpen: false
-    };
-    this.toggleContact = this.toggleContact.bind(this);
+    this.state = {};
     this.renderContactInfo = this.renderContactInfo.bind(this);
     this.renderCauses = this.renderCauses.bind(this);
     this.renderExperiences = this.renderExperiences.bind(this);
     this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
+    this.updateUser = this.updateUser.bind(this);
   }
-  toggleContact() {
-    this.setState({
-      popoverOpen: !this.state.popoverOpen
-    });
+  updateUser() {
+    fetch("/user", {
+      credentials: "same-origin"
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          this.props.dispatch(Actions.SignIn(res.user));
+        }
+      })
+      .catch(err => {
+        this.props.dispatch(
+          Actions.AlertGlobal(
+            "Could not Connect to server " + err.message,
+            "danger"
+          )
+        );
+      });
   }
   renderContactInfo(phonenumber, email, address) {
     return (
       <div className="contactInfo">
-        <Button id="contactPopover" onClick={this.toggleContact}>
-          <IoIosPhonePortrait />
-        </Button>
-        <Popover
-          placement="right"
-          isOpen={this.state.popoverOpen}
-          target="contactPopover"
-          toggle={this.toggle}
+        <Button
+          color="primary"
+          outline
+          id="toggler"
+          style={{ marginBottom: "1rem" }}
         >
-          <PopoverHeader>Contact Info</PopoverHeader>
-          <PopoverBody>{email}</PopoverBody>
-          <PopoverBody>{phonenumber}</PopoverBody>
-          <PopoverBody>{PaymentAddress.details}</PopoverBody>
-        </Popover>
+          Contact Info
+        </Button>
+        <UncontrolledCollapse toggler="#toggler">
+          <ListGroup>
+            <ListGroupItem>
+              <IoIosMail /> {email}
+            </ListGroupItem>
+            <ListGroupItem>
+              <IoIosPhonePortrait /> {phonenumber}
+            </ListGroupItem>
+            {address === undefined ? (
+              ""
+            ) : (
+              <ListGroupItem>
+                <IoIosHome />{" "}
+                {`${address.details}, ${address.city}, ${address.state}, ${
+                  address.zip
+                }`}
+              </ListGroupItem>
+            )}
+          </ListGroup>
+        </UncontrolledCollapse>
       </div>
     );
   }
@@ -67,7 +94,12 @@ export class UserProfile extends Component {
       <Container className="profileCauses">
         {causes.map((cause, index) => {
           return (
-            <Badge key={index} color="primary" className="causeBadge">
+            <Badge
+              key={index}
+              color="primary"
+              className="causeBadge"
+              style={{ marginLeft: "2.5px", marginRight: "2.5px" }}
+            >
               #{cause.title}
             </Badge>
           );
@@ -90,9 +122,51 @@ export class UserProfile extends Component {
               <ListGroupItem key={index} className="experiencesCard">
                 <Card>
                   <CardHeader>
+                    {this.props.canEdit ? (
+                      <Button
+                        close
+                        onClick={event => {
+                          fetch("/user/experiences/remove", {
+                            credentials: "same-origin",
+                            method: "DELETE",
+                            body: JSON.stringify({
+                              id: experience._id
+                            })
+                          })
+                            .then(res => res.json())
+                            .then(res => {
+                              if (res.success) {
+                                this.props.dispatch(
+                                  Actions.AlertGlobal(res.message, "success")
+                                );
+                                this.updateUser();
+                              } else {
+                                this.props.dispatch(
+                                  Actions.AlertGlobal(res.message, "danger")
+                                );
+                              }
+                            })
+                            .catch(err => {
+                              this.props.dispatch(
+                                Actions.AlertGlobal(err.message, "danger")
+                              );
+                            });
+                        }}
+                      />
+                    ) : (
+                      ""
+                    )}
                     <strong>{experience.title}</strong>
                     {experience.causes.map((cause, index) => {
-                      return <Badge key={index}>#{cause.title}</Badge>;
+                      return (
+                        <Badge
+                          key={index}
+                          style={{ marginLeft: "2.5px", marginRight: "2.5px" }}
+                          color="secondary"
+                        >
+                          #{cause.title}
+                        </Badge>
+                      );
                     })}
                   </CardHeader>
                   <CardBody>
@@ -108,6 +182,22 @@ export class UserProfile extends Component {
               </ListGroupItem>
             );
           })}
+          {this.props.canEdit ? (
+            <ListGroupItem>
+              <Button
+                color="primary"
+                id="toggler"
+                style={{ marginBottom: "1rem" }}
+              >
+                Add Experience
+              </Button>
+              <UncontrolledCollapse toggler="#toggler">
+                <AddExperienceFrom experiences={experiences} />
+              </UncontrolledCollapse>
+            </ListGroupItem>
+          ) : (
+            ""
+          )}
         </ListGroup>
       </Container>
     );
@@ -117,7 +207,7 @@ export class UserProfile extends Component {
     this.props.history.push("/myprofile/update");
   }
   render() {
-    if (!this.props.user) return <h1>error</h1>;
+    if (!this.props.user) return <h1>Could Not Find User</h1>;
     let user = this.props.user;
     return (
       <div className="profile">
@@ -125,13 +215,21 @@ export class UserProfile extends Component {
           <CardHeader className="profileHeader" color="primary">
             <CardImg
               top
-              className="profileImage"
+              className="profileImage rounded-circle"
               src={user.image}
               alt="Card image cap"
             />
-            <Button color="primary" onClick={this.handleUpdateProfile}>
-              Edit Profile
-            </Button>
+            {this.props.canEdit ? (
+              <Button
+                color="primary"
+                outline
+                onClick={this.handleUpdateProfile}
+              >
+                Edit Profile
+              </Button>
+            ) : (
+              ""
+            )}
           </CardHeader>
           <CardBody>
             <CardTitle className="profileName">{user.fullname} </CardTitle>

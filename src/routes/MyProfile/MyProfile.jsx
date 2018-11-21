@@ -22,7 +22,7 @@ export class MyProfile extends Component {
   render() {
     return (
       <div className="profileContainer">
-        <UserProfile user={this.props.me} />
+        <UserProfile canEdit={true} user={this.props.me} />
       </div>
     );
   }

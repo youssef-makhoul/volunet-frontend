@@ -1,0 +1,66 @@
+.projectContainer {
+    width: 100%;
+    align-self: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding: unset;
+    margin: unset;
+    max-width: unset;
+}
+
+.projectCardDetais {
+    margin: 1%;
+    width: 100%;
+}
+
+.cardTitle{
+    position: relative;
+    padding:10px;
+    margin-left: 10px;
+    margin-top:15px;
+}
+.cardHeader{
+    align-self: center;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    padding: unset;
+    margin: unset;
+    max-width: unset;
+    width:100%;
+}
+
+.projectImage {
+    width: 30%;
+    align-self: center;
+    padding: 10px;
+    margin-right: 10px;
+}
+
+.postsList {
+    margin: 1%;
+    width: 100%;
+}
+
+.projectCardDesc {}
+
+.profileName {
+    font-size: 40px;
+}
+
+.profileCauses {
+    display: flex;
+    justify-content: center;
+}
+
+.profile {
+    width: 80%;
+    margin: 0;
+    padding: 0;
+    background-color: #000 top;
+    left: 0;
+}
+
+.cauesBadge {}
