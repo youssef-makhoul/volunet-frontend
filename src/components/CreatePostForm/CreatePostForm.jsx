@@ -57,13 +57,13 @@ class CreatePostForm extends Component {
         <Form onSubmit={this.handleSubmit}>
           <FormGroup>
             <Label for="post" className="formLabel">
-              Wrie A Post
+              Post a Comment:
             </Label>
             <InputGroup>
               <Input
                 type="text"
                 id="post"
-                placeholder="Type a post ..."
+                placeholder="Post ..."
                 onChange={event => {
                   this.setState({
                     content: event.target.value

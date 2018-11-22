@@ -418,7 +418,7 @@ export class CreateProjectForm extends Component {
             </InputGroup>
           </FormGroup>
           {this.renderCausesSubForm(this.state.causes)}
-          <Button type="submit">Create Project</Button>
+          <Button type="submit" color="primary" outline>Create Project</Button>
         </Form>
       </div>
     );

@@ -109,7 +109,7 @@ class AddExperienceForm extends Component {
         <InputGroup>
           <InputGroupAddon addonType="prepend" className="inputAddon">
             <InputGroupText>
-              Causes: {this.renderUserCausesList(causes)}
+              For What Causes: {this.renderUserCausesList(causes)}
             </InputGroupText>
           </InputGroupAddon>
           <Button
@@ -190,7 +190,7 @@ class AddExperienceForm extends Component {
         <FormGroup>
           <InputGroup>
             <InputGroupAddon addonType="prepend" className="inputAddon">
-              <InputGroupText>Title:</InputGroupText>
+              <InputGroupText>What you Did:</InputGroupText>
             </InputGroupAddon>
             <Input
               type="text"

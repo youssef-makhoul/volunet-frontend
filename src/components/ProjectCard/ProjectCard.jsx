@@ -147,7 +147,7 @@ class ProjectCard extends Component {
         <CardBody className="projectCardDesc">
           <CardText>
             {" "}
-            Participation:{" "}
+            <strong>Participants:</strong>{" "}
             <Badge
               color={
                 project.peopleneeded === project.followers.length
@@ -164,14 +164,11 @@ class ProjectCard extends Component {
               DeadLine={project.deadline}
             />
           </CardText>
-          <Container>
             <CardText>
-              <strong>Desc: </strong>
               {project.description.length > 25
                 ? `${project.description.slice(0, 50)} ...`
                 : project.description}
             </CardText>
-          </Container>
         </CardBody>
       </Card>
     );

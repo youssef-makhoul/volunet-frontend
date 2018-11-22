@@ -15,6 +15,14 @@
     width: 100%;
 }
 
+.participantsBadge{
+    cursor:pointer;
+}
+.participantsBadge:hover{
+    opacity: 0.92;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+}
 .cardTitle{
     position: relative;
     padding:10px;

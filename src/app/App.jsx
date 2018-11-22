@@ -119,10 +119,11 @@ class App extends Component {
     this.checkAuthenticated();
     return (
       <BrowserRouter>
-        <div className="App">
+        <div className="App alert alert-error">
           <NavigationBar />
+          
           <div style={{ position: "relative" }}>
-            {this.renderGlobalAlert()}
+          {this.renderGlobalAlert()}
             <Route
               exact={true}
               path="/"

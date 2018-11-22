@@ -54,16 +54,19 @@ const DateText = props => {
   let enddate = new Date(props.EndDate);
   let deadline = new Date(props.DeadLine);
   return (
-    <span>
+    <span className="text-muted" style={{ fontSize: "2vmin" }}>
       Starts on:
       {` ${startdate.getFullYear()}/${startdate.getMonth() +
         1}/${startdate.getDate()} `}
+      <br />
       Ends at:
       {` ${enddate.getFullYear()}/${enddate.getMonth() +
         1}/${enddate.getDate()} `}
+      <br />
       Deadline to Participate:
       {` ${deadline.getFullYear()}/${deadline.getMonth() +
         1}/${deadline.getDate()} `}
+      <br />
       <br />
     </span>
   );
@@ -74,24 +77,30 @@ const PostsListGroup = props => {
   let projectid = props.projectid;
   return (
     <ListGroup className={props.className}>
+      <ListGroupItem>
+        <ListGroupItemHeading> Comments</ListGroupItemHeading>
+      </ListGroupItem>
       {posts.map((post, index) => {
         let postTime = new Date(post.timestamp);
         return (
           <ListGroupItem key={index}>
-            <ListGroupItemHeading>
-              <Button
-                color="link"
-                onClick={() => props.userLinkFunc(post.user._id)}
-              >
-                {post.user.fullname}
-              </Button>{" "}
-              <small className="text-muted" style={{ fontSize: "1.5vmin" }}>
-                {` ${postTime.getFullYear()}/${postTime.getMonth() +
-                  1}/${postTime.getDate()}
+            <ListGroup>
+              <ListGroupItem>
+                <Button
+                  color="link"
+                  onClick={() => props.userLinkFunc(post.user._id)}
+                  style={{padding:"0"}}
+                >
+                  {post.user.fullname}
+                </Button>{" "}
+                <small className="text-muted" style={{ fontSize: "1.5vmin" }}>
+                  {` ${postTime.getFullYear()}/${postTime.getMonth() +
+                    1}/${postTime.getDate()}
               -${postTime.getHours()}:${postTime.getMinutes()} `}
-              </small>
-            </ListGroupItemHeading>
-            <ListGroupItemText>{post.content}</ListGroupItemText>
+                </small>
+              </ListGroupItem>
+              <ListGroupItem>{post.content}</ListGroupItem>
+            </ListGroup>
           </ListGroupItem>
         );
       })}
@@ -286,7 +295,7 @@ class ProjectDetailsCard extends Component {
               <CardText>
                 <CausesList causes={project.causes} />
               </CardText>
-              <span className="text-muted small">created by:</span>
+              <span className="text-muted small">Managed by:</span>
               <Button
                 size="sm"
                 className="text-muted"
@@ -298,6 +307,12 @@ class ProjectDetailsCard extends Component {
               >
                 {project.owner.fullname}
               </Button>
+              <br />
+              <DateText
+                EndDate={project.enddate}
+                StartDate={project.startdate}
+                DeadLine={project.deadline}
+              />
             </CardTitle>
             <CardImg
               className="projectImage"
@@ -306,52 +321,56 @@ class ProjectDetailsCard extends Component {
             />
           </CardHeader>
           <CardBody className="projectCardDesc">
-            <CardText>
-              {" "}
-              Participation:{" "}
-              <Badge
-                id="participants"
-                color={
-                  project.peopleneeded === project.followers.length
-                    ? "danger"
-                    : "success"
-                }
-              >
-                {project.followers.length} / {project.peopleneeded}
-              </Badge>
-              <UncontrolledCollapse toggler="#participants">
-                <Card>
-                  <CardBody>
-                    {project.followers.map(item => {
-                      return (
-                        <span>
-                          <Button
-                            color="link"
-                            onClick={() => {
-                              this.props.history.push(`/user/${item._id}`);
-                            }}
-                            style={{ marginRight: "15px" }}
-                          >
-                            {item.fullname}
-                          </Button>
-                        </span>
-                      );
-                    })}
-                  </CardBody>
-                </Card>
-              </UncontrolledCollapse>
-              <br />
-              <DateText
-                EndDate={project.enddate}
-                StartDate={project.startdate}
-                DeadLine={project.deadline}
-              />
-            </CardText>
-            <Container>
-              <CardText>{project.description}</CardText>
-            </Container>
+            <ListGroup>
+              <ListGroupItem>
+                <CardText>
+                  {" "}
+                  <strong>Participants: </strong>
+                  <Badge
+                    id="participants"
+                    color={
+                      project.peopleneeded === project.followers.length
+                        ? "danger"
+                        : "success"
+                    }
+                    className="participantsBadge"
+                  >
+                    {project.followers.length} / {project.peopleneeded}
+                  </Badge>
+                  <UncontrolledCollapse toggler="#participants">
+                    <Card>
+                      <CardBody>
+                        {project.followers.map(item => {
+                          return (
+                            <span>
+                              <Button
+                                color="link"
+                                onClick={() => {
+                                  this.props.history.push(`/user/${item._id}`);
+                                }}
+                                style={{ marginRight: "15px" }}
+                              >
+                                {item.fullname}
+                              </Button>
+                            </span>
+                          );
+                        })}
+                      </CardBody>
+                    </Card>
+                  </UncontrolledCollapse>
+                </CardText>
+              </ListGroupItem>
+              <ListGroupItem>
+                <CardText>
+                  <strong>Description: </strong>
+                  <br />
+                  {project.description}
+                </CardText>
+              </ListGroupItem>
+            </ListGroup>
           </CardBody>
         </Card>
+
         <PostsListGroup
           className="postsList"
           posts={project.posts}

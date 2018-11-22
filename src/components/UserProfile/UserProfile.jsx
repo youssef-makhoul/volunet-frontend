@@ -121,7 +121,7 @@ class UserProfile extends Component {
     return (
       <Container className="experiencesContainer">
         <ListGroup>
-          Experience
+        <ListGroupItem><strong>Volunteering History</strong></ListGroupItem>
           {experiences.map((experience, index) => {
             return (
               <ListGroupItem key={index} className="experiencesCard">
@@ -195,7 +195,7 @@ class UserProfile extends Component {
                 onClick={this.toggleExpCollapse}
                 style={{ marginBottom: "1rem" }}
               >
-                Add Experience
+                Add Volunteering Experience
               </Button>
               <Collapse isOpen={this.state.collapse}>
                 <AddExperienceFrom toggle={this.toggleExpCollapse} experiences={experiences} />

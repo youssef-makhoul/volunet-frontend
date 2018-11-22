@@ -22,12 +22,12 @@
 }
 
 .globalAlert {
-    position: absolute;
+    position: fixed ;
     height: 50px;
     font-size: 2vmin;
     width: 60vmin;
     right:0;
-    top:0;
+    top:6vmin;
     z-index: 99;
 }
 
