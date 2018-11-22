@@ -4,17 +4,17 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 //Components
 import {
-    Form,
-    FormGroup,
-    Input,
-    Button,
-    Collapse,
-    Card,
-    CardBody,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    UncontrolledTooltip
+  Form,
+  FormGroup,
+  Input,
+  Button,
+  Collapse,
+  Card,
+  CardBody,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  UncontrolledTooltip
 } from "reactstrap";
 //Actions
 import Actions from "../../redux/actions";
@@ -37,7 +37,7 @@ class AddExperienceForm extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.updateUser = this.updateUser.bind(this);
   }
-  updateUser(){
+  updateUser() {
     fetch("/user", {
       credentials: "same-origin"
     })
@@ -173,6 +173,7 @@ class AddExperienceForm extends Component {
       .then(res => {
         if (res.success) {
           this.props.dispatch(Actions.AlertGlobal(res.message, "success"));
+          this.props.toggle();
           this.updateUser();
         } else {
           this.props.dispatch(Actions.AlertGlobal(res.message, "danger"));
@@ -184,89 +185,89 @@ class AddExperienceForm extends Component {
   }
   render() {
     return (
-        <Form onSubmit={this.handleSubmit}>
-          {/* ---------- title ---------- */}
-          <FormGroup>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend" className="inputAddon">
-                <InputGroupText>Title:</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                type="text"
-                id="title"
-                placeholder="Title"
-                onChange={event => {
-                  this.setState({
-                    title: event.target.value
-                  });
-                }}
-                value={this.state.title}
-              />
-            </InputGroup>
-          </FormGroup>
-          {/* ---------- description ---------- */}
-          <FormGroup>
-            <InputGroup>
-              <InputGroupAddon
-                addonType="prepend"
-                className="glyphicon glyphicon-star glyphicon glyphicon-star"
-              >
-                <InputGroupText>Description:</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                type="textarea"
-                id="description"
-                placeholder="Description"
-                onChange={event => {
-                  this.setState({
-                    description: event.target.value
-                  });
-                }}
-                value={this.state.description}
-              />
-            </InputGroup>
-          </FormGroup>
-          {/* ---------- startdate ---------- */}
-          <FormGroup>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend" className="inputAddon">
-                <InputGroupText>Start Date:</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                type="date"
-                id="startdate"
-                placeholder="date placeholder"
-                onChange={event => {
-                  this.setState({
-                    startdate: event.target.value
-                  });
-                }}
-                value={this.state.startdate}
-              />
-            </InputGroup>
-          </FormGroup>
-          {/* ---------- enddate ---------- */}
-          <FormGroup>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend" className="inputAddon">
-                <InputGroupText>End Date:</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                type="date"
-                id="enddate"
-                placeholder="date placeholder"
-                onChange={event => {
-                  this.setState({
-                    enddate: event.target.value
-                  });
-                }}
-                value={this.state.enddate}
-              />
-            </InputGroup>
-          </FormGroup>
-          {this.renderCausesSubForm(this.state.causes)}
-          <Button type="submit">Add</Button>
-        </Form>
+      <Form onSubmit={this.handleSubmit}>
+        {/* ---------- title ---------- */}
+        <FormGroup>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend" className="inputAddon">
+              <InputGroupText>Title:</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              type="text"
+              id="title"
+              placeholder="Title"
+              onChange={event => {
+                this.setState({
+                  title: event.target.value
+                });
+              }}
+              value={this.state.title}
+            />
+          </InputGroup>
+        </FormGroup>
+        {/* ---------- description ---------- */}
+        <FormGroup>
+          <InputGroup>
+            <InputGroupAddon
+              addonType="prepend"
+              className="glyphicon glyphicon-star glyphicon glyphicon-star"
+            >
+              <InputGroupText>Description:</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              type="textarea"
+              id="description"
+              placeholder="Description"
+              onChange={event => {
+                this.setState({
+                  description: event.target.value
+                });
+              }}
+              value={this.state.description}
+            />
+          </InputGroup>
+        </FormGroup>
+        {/* ---------- startdate ---------- */}
+        <FormGroup>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend" className="inputAddon">
+              <InputGroupText>Start Date:</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              type="date"
+              id="startdate"
+              placeholder="date placeholder"
+              onChange={event => {
+                this.setState({
+                  startdate: event.target.value
+                });
+              }}
+              value={this.state.startdate}
+            />
+          </InputGroup>
+        </FormGroup>
+        {/* ---------- enddate ---------- */}
+        <FormGroup>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend" className="inputAddon">
+              <InputGroupText>End Date:</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              type="date"
+              id="enddate"
+              placeholder="date placeholder"
+              onChange={event => {
+                this.setState({
+                  enddate: event.target.value
+                });
+              }}
+              value={this.state.enddate}
+            />
+          </InputGroup>
+        </FormGroup>
+        {this.renderCausesSubForm(this.state.causes)}
+        <Button type="submit">Add</Button>
+      </Form>
     );
   }
 }

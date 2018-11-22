@@ -23,7 +23,8 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
+  UncontrolledCollapse
 } from "reactstrap";
 import CreatePostForm from "../CreatePostForm/CreatePostForm";
 //Actions
@@ -146,8 +147,12 @@ class ProjectDetailsCard extends Component {
   renderDeleteProject() {
     return (
       <div style={{ display: "inline" }}>
-        <Button color="danger" 
-                size="sm" style={{marginLeft:"10px"}}onClick={this.toggleModal}>
+        <Button
+          color="danger"
+          size="sm"
+          style={{ marginLeft: "10px" }}
+          onClick={this.toggleModal}
+        >
           Delete Project
         </Button>
         <Modal
@@ -305,6 +310,7 @@ class ProjectDetailsCard extends Component {
               {" "}
               Participation:{" "}
               <Badge
+                id="participants"
                 color={
                   project.peopleneeded === project.followers.length
                     ? "danger"
@@ -313,6 +319,27 @@ class ProjectDetailsCard extends Component {
               >
                 {project.followers.length} / {project.peopleneeded}
               </Badge>
+              <UncontrolledCollapse toggler="#participants">
+                <Card>
+                  <CardBody>
+                    {project.followers.map(item => {
+                      return (
+                        <span>
+                          <Button
+                            color="link"
+                            onClick={() => {
+                              this.props.history.push(`/user/${item._id}`);
+                            }}
+                            style={{ marginRight: "15px" }}
+                          >
+                            {item.fullname}
+                          </Button>
+                        </span>
+                      );
+                    })}
+                  </CardBody>
+                </Card>
+              </UncontrolledCollapse>
               <br />
               <DateText
                 EndDate={project.enddate}

@@ -1,0 +1,16 @@
+.CreatProjectContainer{
+    /* background: rgb(240, 231, 231); */
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    /* outline: 1px solid black; */
+    position:fixed;
+    top: 50%;
+    left: 50%;
+    height:60vmin;
+    margin-top: -23vmin; /*set to a negative number 1/2 of your height*/
+    width:120vmin;
+    margin-left: -50vmin; /*set to a negative number 1/2 of your width*/
+}

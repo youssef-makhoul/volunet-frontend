@@ -22,19 +22,24 @@ import {
   Container,
   ListGroup,
   ListGroupItem,
-  UncontrolledCollapse
+  UncontrolledCollapse,
+  Collapse
 } from "reactstrap";
 import AddExperienceFrom from "../AddExperienceForm/AddExperienceForm";
 
 class UserProfile extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {collapse:false};
     this.renderContactInfo = this.renderContactInfo.bind(this);
     this.renderCauses = this.renderCauses.bind(this);
     this.renderExperiences = this.renderExperiences.bind(this);
     this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
     this.updateUser = this.updateUser.bind(this);
+    this.toggleExpCollapse = this.toggleExpCollapse.bind(this);
+  }
+  toggleExpCollapse() {
+    this.setState({ collapse: !this.state.collapse });
   }
   updateUser() {
     fetch("/user", {
@@ -125,7 +130,7 @@ class UserProfile extends Component {
                     {this.props.canEdit ? (
                       <Button
                         close
-                        onClick={event => {
+                        onClick={() => {
                           fetch("/user/experiences/remove", {
                             credentials: "same-origin",
                             method: "DELETE",
@@ -187,13 +192,14 @@ class UserProfile extends Component {
               <Button
                 color="primary"
                 id="toggler"
+                onClick={this.toggleExpCollapse}
                 style={{ marginBottom: "1rem" }}
               >
                 Add Experience
               </Button>
-              <UncontrolledCollapse toggler="#toggler">
-                <AddExperienceFrom experiences={experiences} />
-              </UncontrolledCollapse>
+              <Collapse isOpen={this.state.collapse}>
+                <AddExperienceFrom toggle={this.toggleExpCollapse} experiences={experiences} />
+              </Collapse>
             </ListGroupItem>
           ) : (
             ""

@@ -15,7 +15,7 @@ export class CreateProject extends Component {
   }
   render() {
     return (
-      <div className="FormContainer">
+      <div className="CreatProjectContainer">
         <CreateProjectForm />
       </div>
     );

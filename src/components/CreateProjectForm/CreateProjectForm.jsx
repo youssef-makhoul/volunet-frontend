@@ -174,6 +174,7 @@ export class CreateProjectForm extends Component {
       .then(res => {
         if (res.success) {
           this.props.dispatch(Actions.AlertGlobal(res.message, "success"));
+          this.props.history.push("/");
         } else {
           this.props.dispatch(Actions.AlertGlobal(res.message, "danger"));
         }
